@@ -21,7 +21,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
 
-  sharding-server:
+  server:
     image: rahat3062/sharding-server
     ports:
       - 80:80
@@ -37,3 +37,7 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=postgres@gmail.com
       - PGADMIN_DEFAULT_PASSWORD=postgres
+    depends_on:
+      - pgshard1
+      - pgshard2
+      - pgshard3

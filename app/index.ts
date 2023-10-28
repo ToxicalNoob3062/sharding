@@ -14,8 +14,7 @@ const shardsAdressPorts = ["5434", "5435", "5436"];
 const hashRange = new HashRing(shardsAdressPorts);
 
 //create client instances for shards
-let clients: { [key: string]: Client } = {};
-
+const clients: { [key: string]: Client } = {};
 for (let address of shardsAdressPorts) {
   const client = (clients[address] = new Client({
     host: "host.docker.internal",
@@ -24,16 +23,19 @@ for (let address of shardsAdressPorts) {
     password: "postgres",
     database: "postgres",
   }));
-
+  const conn = async () => {
+    try {
+      await client.connect();
+      console.log(`pgshard@${address} connected!`);
+      //add nodes to range
+      hashRange.add(`${address}`);
+    } catch (err) {
+      setTimeout(conn, 2000);
+      console.log((err as Error)?.message);
+    }
+  };
   //connect to those shards
-  try {
-    await client.connect();
-    console.log(`pgshard@${address} connected!`);
-    //add nodes to range
-    hashRange.add(`${address}`);
-  } catch (err) {
-    console.log((err as Error)?.message);
-  }
+  setTimeout(conn, 2000);
 }
 
 //setting up api routes;
