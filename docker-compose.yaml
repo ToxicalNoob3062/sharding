@@ -1,0 +1,39 @@
+version: "3"
+services:
+  pgshard1:
+    image: rahat3062/pgshard
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  pgshard2:
+    image: rahat3062/pgshard
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  pgshard3:
+    image: rahat3062/pgshard
+    ports:
+      - 5436:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  sharding-server:
+    image: rahat3062/sharding-server
+    ports:
+      - 80:80
+    depends_on:
+      - pgshard1
+      - pgshard2
+      - pgshard3
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    ports:
+      - 5050:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=postgres@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=postgres
